@@ -5,9 +5,9 @@ import { customAlert, isBeforeFrontendVersion } from "./common.js";
 
 const is_legacy_front = () => isBeforeFrontendVersion('1.16.9');
 
-if(is_legacy_front()) {
-	customAlert("An outdated version(<1.16.9) of the `comfyui-frontend-package` is installed. It is not compatible with the current version of the Impact Pack.");
-}
+// if(is_legacy_front()) {
+// 	customAlert("An outdated version(<1.16.9) of the `comfyui-frontend-package` is installed. It is not compatible with the current version of the Impact Pack.");
+// }
 
 let wildcards_list = [];
 async function load_wildcards() {
@@ -100,13 +100,13 @@ const input_dirty = {};
 const output_tracking = {};
 
 function progressExecuteHandler(event) {
-	if(event.detail?.output?.aux){
+	if (event.detail?.output?.aux) {
 		const id = event.detail.node;
-		if(input_tracking.hasOwnProperty(id)) {
-			if(input_tracking.hasOwnProperty(id) && input_tracking[id][0] != event.detail.output.aux[0]) {
+		if (input_tracking.hasOwnProperty(id)) {
+			if (input_tracking.hasOwnProperty(id) && input_tracking[id][0] != event.detail.output.aux[0]) {
 				input_dirty[id] = true;
 			}
-			else{
+			else {
 
 			}
 		}
@@ -116,22 +116,22 @@ function progressExecuteHandler(event) {
 }
 
 function imgSendHandler(event) {
-	if(event.detail.images.length > 0){
+	if (event.detail.images.length > 0) {
 		let data = event.detail.images[0];
 		let filename = `${data.filename} [${data.type}]`;
 
 		let nodes = app.graph._nodes;
-		for(let i in nodes) {
-			if(nodes[i].type == 'ImageReceiver') {
+		for (let i in nodes) {
+			if (nodes[i].type == 'ImageReceiver') {
 				let is_linked = false;
 
-				if(nodes[i].widgets[1].type == 'converted-widget') {
-					for(let j in nodes[i].inputs) {
+				if (nodes[i].widgets[1].type == 'converted-widget') {
+					for (let j in nodes[i].inputs) {
 						let input = nodes[i].inputs[j];
-						if(input.name === 'link_id') {
-							if(input.link) {
+						if (input.name === 'link_id') {
+							if (input.link) {
 								let src_node = app.graph._nodes_by_id[app.graph.links[input.link].origin_id];
-								if(src_node.type == 'ImpactInt' || src_node.type == 'PrimitiveNode') {
+								if (src_node.type == 'ImpactInt' || src_node.type == 'PrimitiveNode') {
 									is_linked = true;
 								}
 							}
@@ -139,12 +139,12 @@ function imgSendHandler(event) {
 						}
 					}
 				}
-				else if(nodes[i].widgets[1].value == event.detail.link_id) {
+				else if (nodes[i].widgets[1].value == event.detail.link_id) {
 					is_linked = true;
 				}
 
-				if(is_linked) {
-					if(data.subfolder)
+				if (is_linked) {
+					if (data.subfolder)
 						nodes[i].widgets[0].value = `${data.subfolder}/${data.filename} [${data.type}]`;
 					else
 						nodes[i].widgets[0].value = `${data.filename} [${data.type}]`;
@@ -155,7 +155,7 @@ function imgSendHandler(event) {
 						nodes[i].size[1] = Math.max(200, nodes[i].size[1]);
 						app.canvas.setDirty(true);
 					};
-					img.src = `/view?filename=${data.filename}&type=${data.type}&subfolder=${data.subfolder}`+app.getPreviewFormatParam();
+					img.src = `/view?filename=${data.filename}&type=${data.type}&subfolder=${data.subfolder}` + app.getPreviewFormatParam();
 				}
 			}
 		}
@@ -164,21 +164,21 @@ function imgSendHandler(event) {
 
 
 function latentSendHandler(event) {
-	if(event.detail.images.length > 0){
+	if (event.detail.images.length > 0) {
 		let data = event.detail.images[0];
 		let filename = `${data.filename} [${data.type}]`;
 
 		let nodes = app.graph._nodes;
-		for(let i in nodes) {
-			if(nodes[i].type == 'LatentReceiver') {
-				if(nodes[i].widgets[1].value == event.detail.link_id) {
-					if(data.subfolder)
+		for (let i in nodes) {
+			if (nodes[i].type == 'LatentReceiver') {
+				if (nodes[i].widgets[1].value == event.detail.link_id) {
+					if (data.subfolder)
 						nodes[i].widgets[0].value = `${data.subfolder}/${data.filename} [${data.type}]`;
 					else
 						nodes[i].widgets[0].value = `${data.filename} [${data.type}]`;
 
 					let img = new Image();
-					img.src = `/view?filename=${data.filename}&type=${data.type}&subfolder=${data.subfolder}`+app.getPreviewFormatParam();
+					img.src = `/view?filename=${data.filename}&type=${data.type}&subfolder=${data.subfolder}` + app.getPreviewFormatParam();
 					nodes[i].imgs = [img];
 					nodes[i].size[1] = Math.max(200, nodes[i].size[1]);
 				}
@@ -190,22 +190,22 @@ function latentSendHandler(event) {
 
 function valueSendHandler(event) {
 	let nodes = app.graph._nodes;
-	for(let i in nodes) {
-		if(nodes[i].type == 'ImpactValueReceiver') {
-			if(nodes[i].widgets[2].value == event.detail.link_id) {
+	for (let i in nodes) {
+		if (nodes[i].type == 'ImpactValueReceiver') {
+			if (nodes[i].widgets[2].value == event.detail.link_id) {
 				nodes[i].widgets[1].value = event.detail.value;
 
 				let typ = typeof event.detail.value;
-				if(typ == 'string') {
+				if (typ == 'string') {
 					nodes[i].widgets[0].value = "STRING";
 				}
-				else if(typ == "boolean") {
+				else if (typ == "boolean") {
 					nodes[i].widgets[0].value = "BOOLEAN";
 				}
-				else if(typ != "number") {
+				else if (typ != "number") {
 					nodes[i].widgets[0].value = typeof event.detail.value;
 				}
-				else if(Number.isInteger(event.detail.value)) {
+				else if (Number.isInteger(event.detail.value)) {
 					nodes[i].widgets[0].value = "INT";
 				}
 				else {
@@ -262,20 +262,20 @@ app.registerExtension({
 
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
 		if (nodeData.name == "IterativeLatentUpscale" || nodeData.name == "IterativeImageUpscale"
-			|| nodeData.name == "RegionalSampler"|| nodeData.name == "RegionalSamplerAdvanced") {
+			|| nodeData.name == "RegionalSampler" || nodeData.name == "RegionalSamplerAdvanced") {
 			impactProgressBadge.addStatusHandler(nodeType);
 		}
 
-		if(nodeData.name == "ImpactControlBridge") {
+		if (nodeData.name == "ImpactControlBridge") {
 			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-				if(index != 0 || !link_info || this.inputs[0].type != '*')
+				if (index != 0 || !link_info || this.inputs[0].type != '*')
 					return;
 
 				// assign type
 				let slot_type = '*';
 
-				if(type == 2) {
+				if (type == 2) {
 					slot_type = link_info.type;
 				}
 				else {
@@ -289,19 +289,19 @@ app.registerExtension({
 			}
 		}
 
-		if(nodeData.name == "ImpactConditionalBranch" || nodeData.name == "ImpactConditionalBranchSelMode") {
+		if (nodeData.name == "ImpactConditionalBranch" || nodeData.name == "ImpactConditionalBranchSelMode") {
 			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-				if(!link_info || this.inputs[0].type != '*')
+				if (!link_info || this.inputs[0].type != '*')
 					return;
 
-				if(index >= 2)
+				if (index >= 2)
 					return;
 
 				// assign type
 				let slot_type = '*';
 
-				if(type == 2) {
+				if (type == 2) {
 					slot_type = link_info.type;
 				}
 				else {
@@ -316,10 +316,10 @@ app.registerExtension({
 			}
 		}
 
-		if(nodeData.name == "ImpactCompare") {
+		if (nodeData.name == "ImpactCompare") {
 			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-				if(!link_info || this.inputs[0].type != '*' || type == 2)
+				if (!link_info || this.inputs[0].type != '*' || type == 2)
 					return;
 
 				// assign type
@@ -331,19 +331,19 @@ app.registerExtension({
 			}
 		}
 
-		if(nodeData.name == "ImpactSelectNthItemOfAnyList") {
+		if (nodeData.name == "ImpactSelectNthItemOfAnyList") {
 			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-				if(!link_info || this.inputs[0].type != '*')
+				if (!link_info || this.inputs[0].type != '*')
 					return;
 
-				if(index >= 2)
+				if (index >= 2)
 					return;
 
 				// assign type
 				let slot_type = '*';
 
-				if(type == 2) {
+				if (type == 2) {
 					slot_type = link_info.type;
 				}
 				else {
@@ -357,25 +357,25 @@ app.registerExtension({
 			}
 		}
 
-		if(nodeData.name === 'ImpactInversedSwitch') {
+		if (nodeData.name === 'ImpactInversedSwitch') {
 			nodeData.output = ['*'];
 			nodeData.output_is_list = [false];
 			nodeData.output_name = ['output1'];
 
 			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-				if(!link_info)
+				if (!link_info)
 					return;
 
-				if(type == 2) {
+				if (type == 2) {
 					// connect output
-					if(connected){
-						if(app.graph._nodes_by_id[link_info.target_id]?.type == 'Reroute') {
+					if (connected) {
+						if (app.graph._nodes_by_id[link_info.target_id]?.type == 'Reroute') {
 							app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
 						}
 
-						if(this.outputs[0].type == '*'){
-							if(link_info.type == '*' && app.graph.getNodeById(link_info.target_id).slots[link_info.target_slot].type != '*') {
+						if (this.outputs[0].type == '*') {
+							if (link_info.type == '*' && app.graph.getNodeById(link_info.target_id).slots[link_info.target_slot].type != '*') {
 								app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
 							}
 							else {
@@ -383,8 +383,8 @@ app.registerExtension({
 								this.outputs[0].type = link_info.type;
 								this.outputs[0].name = link_info.type;
 
-								for(let i in this.inputs) {
-									if(this.inputs[i].name != 'select')
+								for (let i in this.inputs) {
+									if (this.inputs[i].name != 'select')
 										this.inputs[i].type = link_info.type;
 								}
 							}
@@ -392,25 +392,25 @@ app.registerExtension({
 					}
 				}
 				else {
-					if(app.graph._nodes_by_id[link_info.origin_id]?.type == 'Reroute')
+					if (app.graph._nodes_by_id[link_info.origin_id]?.type == 'Reroute')
 						this.disconnectInput(link_info.target_slot);
 
 					// connect input
-					if(this.inputs[0].type == '*'){
+					if (this.inputs[0].type == '*') {
 						const node = app.graph.getNodeById(link_info.origin_id);
 						let origin_type = node.outputs[link_info.origin_slot]?.type;
 
-						if(origin_type==undefined) {
+						if (origin_type == undefined) {
 							return; // fallback
 						}
 
-						if(origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
+						if (origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
 							this.disconnectInput(link_info.target_slot);
 							return;
 						}
 
-						for(let i in this.inputs) {
-							if(this.inputs[i].name != 'select')
+						for (let i in this.inputs) {
+							if (this.inputs[i].name != 'select')
 								this.inputs[i].type = origin_type;
 						}
 
@@ -424,13 +424,13 @@ app.registerExtension({
 				if (!connected && this.outputs.length > 1) {
 					const stackTrace = new Error().stack;
 
-					if(
+					if (
 						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
 						!stackTrace.includes('LGraphNode.connect') && // for mouse device
 						!stackTrace.includes('loadGraphData')) {
-							if(this.outputs[link_info.origin_slot].links.length == 0) {
-								this.removeOutput(link_info.origin_slot);
-							}
+						if (this.outputs[link_info.origin_slot].links.length == 0) {
+							this.removeOutput(link_info.origin_slot);
+						}
 					}
 				}
 
@@ -443,7 +443,7 @@ app.registerExtension({
 					slot_i++;
 				}
 
-				if(connected) {
+				if (connected) {
 					// NOTE: node.slot_index is different with link_info.origin_slot
 					let last_slot_index = this.outputs.length - 1;
 					if (last_slot_index == link_info.origin_slot) {
@@ -452,86 +452,86 @@ app.registerExtension({
 				}
 
 				let select_slot = this.inputs.find(x => x.name == "select");
-				if(this.widgets?.length) {
-					this.widgets[0].options.max = select_slot?this.outputs.length-1:this.outputs.length;
+				if (this.widgets?.length) {
+					this.widgets[0].options.max = select_slot ? this.outputs.length - 1 : this.outputs.length;
 					this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
-					if(this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
+					if (this.widgets[0].options.max > 0 && this.widgets[0].value == 0)
 						this.widgets[0].value = 1;
 				}
 			}
 		}
 
 		if (nodeData.name === 'ImpactMakeImageList' || nodeData.name === 'ImpactMakeImageBatch' ||
-		    nodeData.name === 'ImpactMakeMaskList' || nodeData.name === 'ImpactMakeMaskBatch' ||
+			nodeData.name === 'ImpactMakeMaskList' || nodeData.name === 'ImpactMakeMaskBatch' ||
 			nodeData.name === 'ImpactMakeAnyList' || nodeData.name === 'CombineRegionalPrompts' ||
 			nodeData.name === 'ImpactCombineConditionings' || nodeData.name === 'ImpactConcatConditionings' ||
 			nodeData.name === 'ImpactSEGSConcat' ||
 			nodeData.name === 'ImpactSwitch' || nodeData.name === 'LatentSwitch' || nodeData.name == 'SEGSSwitch') {
 			var input_name = "input";
 
-			switch(nodeData.name) {
-			case 'ImpactMakeImageList':
-			case 'ImpactMakeImageBatch':
-				input_name = "image";
-				break;
+			switch (nodeData.name) {
+				case 'ImpactMakeImageList':
+				case 'ImpactMakeImageBatch':
+					input_name = "image";
+					break;
 
-			case 'ImpactMakeMaskList':
-			case 'ImpactMakeMaskBatch':
-				input_name = "mask";
-				break;
+				case 'ImpactMakeMaskList':
+				case 'ImpactMakeMaskBatch':
+					input_name = "mask";
+					break;
 
-			case 'ImpactMakeAnyList':
-				input_name = "value";
-				break;
+				case 'ImpactMakeAnyList':
+					input_name = "value";
+					break;
 
-			case 'ImpactSEGSConcat':
-				input_name = "segs";
-				break;
+				case 'ImpactSEGSConcat':
+					input_name = "segs";
+					break;
 
-			case 'CombineRegionalPrompts':
-				input_name = "regional_prompts";
-				break;
+				case 'CombineRegionalPrompts':
+					input_name = "regional_prompts";
+					break;
 
-			case 'ImpactCombineConditionings':
-			case 'ImpactConcatConditionings':
-				input_name = "conditioning";
-				break;
+				case 'ImpactCombineConditionings':
+				case 'ImpactConcatConditionings':
+					input_name = "conditioning";
+					break;
 
-			case 'LatentSwitch':
-				input_name = "input";
-				break;
+				case 'LatentSwitch':
+					input_name = "input";
+					break;
 
-			case 'SEGSSwitch':
-				input_name = "input";
-				break;
+				case 'SEGSSwitch':
+					input_name = "input";
+					break;
 
-			case 'ImpactSwitch':
-				input_name = "input";
+				case 'ImpactSwitch':
+					input_name = "input";
 			}
 
 			const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 			nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
 				const stackTrace = new Error().stack;
-				if(stackTrace.includes('loadGraphData')) {
-					if(this.widgets?.[0]) {
-						this.widgets[0].options.max = this.inputs.length-3;
+				if (stackTrace.includes('loadGraphData')) {
+					if (this.widgets?.[0]) {
+						this.widgets[0].options.max = this.inputs.length - 3;
 						this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
 					}
 					return;
 				}
 
-				if(!link_info)
+				if (!link_info)
 					return;
 
-				if(type == 2) {
+				if (type == 2) {
 					// connect output
-					if(connected && index == 0){
-						if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.target_id]?.type == 'Reroute') {
+					if (connected && index == 0) {
+						if (nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.target_id]?.type == 'Reroute') {
 							app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
 						}
 
-						if(this.outputs[0].type == '*'){
-							if(link_info.type == '*' && app.graph.getNodeById(link_info.target_id).slots[link_info.target_slot].type != '*') {
+						if (this.outputs[0].type == '*') {
+							if (link_info.type == '*' && app.graph.getNodeById(link_info.target_id).slots[link_info.target_slot].type != '*') {
 								app.graph._nodes_by_id[link_info.target_id].disconnectInput(link_info.target_slot);
 							}
 							else {
@@ -540,9 +540,9 @@ app.registerExtension({
 								this.outputs[0].label = link_info.type;
 								this.outputs[0].name = link_info.type;
 
-								for(let i in this.inputs) {
+								for (let i in this.inputs) {
 									let input_i = this.inputs[i];
-									if(input_i.name != 'select' && input_i.name != 'sel_mode')
+									if (input_i.name != 'select' && input_i.name != 'sel_mode')
 										input_i.type = link_info.type;
 								}
 							}
@@ -552,29 +552,29 @@ app.registerExtension({
 					return;
 				}
 				else {
-					if(nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.origin_id].type == 'Reroute')
+					if (nodeData.name == 'ImpactSwitch' && app.graph._nodes_by_id[link_info.origin_id].type == 'Reroute')
 						this.disconnectInput(link_info.target_slot);
 
 					// connect input
-					if(this.inputs[index].name == 'select' || this.inputs[index].name == 'sel_mode')
+					if (this.inputs[index].name == 'select' || this.inputs[index].name == 'sel_mode')
 						return;
 
-					if(this.inputs[0].type == '*'){
+					if (this.inputs[0].type == '*') {
 						const node = app.graph.getNodeById(link_info.origin_id);
 						let origin_type = node.outputs[link_info.origin_slot]?.type;
-						if(link_info.target_slot == 0 && this.inputs.length > 3) {  // NOTE: widgets are regarded as input since new front
-								origin_type = this.inputs[1].type;
-								node.connect(link_info.origin_slot, node.id, 'input1');
+						if (link_info.target_slot == 0 && this.inputs.length > 3) {  // NOTE: widgets are regarded as input since new front
+							origin_type = this.inputs[1].type;
+							node.connect(link_info.origin_slot, node.id, 'input1');
 						}
-						
-						if(origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
+
+						if (origin_type == '*' && app.graph.getNodeById(link_info.origin_id).slots[link_info.origin_slot].type != '*') {
 							this.disconnectInput(link_info.target_slot);
 							return;
 						}
 
-						for(let i in this.inputs) {
+						for (let i in this.inputs) {
 							let input_i = this.inputs[i];
-							if(input_i.name != 'select' && input_i.name != 'sel_mode')
+							if (input_i.name != 'select' && input_i.name != 'sel_mode')
 								input_i.type = origin_type;
 						}
 
@@ -587,12 +587,12 @@ app.registerExtension({
 				let select_slot = this.inputs.find(x => x.name == "select");
 
 				if (!connected && (this.inputs.length > 3)) {
-					if(
+					if (
 						!stackTrace.includes('LGraphNode.prototype.connect') && // for touch device
 						!stackTrace.includes('LGraphNode.connect') && // for mouse device
 						!stackTrace.includes('loadGraphData') &&
 						this.inputs[index].name != 'select') {
-						    this.removeInput(index);
+						this.removeInput(index);
 					}
 				}
 
@@ -600,18 +600,18 @@ app.registerExtension({
 				let slot_i = 1;
 				for (let i = 0; i < this.inputs.length; i++) {
 					let input_i = this.inputs[i];
-					if(input_i.name != 'select'&& input_i.name != 'sel_mode') {
+					if (input_i.name != 'select' && input_i.name != 'sel_mode') {
 						input_i.name = `${input_name}${slot_i}`
 						slot_i++;
 					}
 				}
 
-				if(connected) {
+				if (connected) {
 					this.addInput(`${input_name}${slot_i}`, this.outputs[0].type);
 				}
 
-				if(this.widgets?.[0]) {
-					this.widgets[0].options.max = this.inputs.length-3;
+				if (this.widgets?.[0]) {
+					this.widgets[0].options.max = this.inputs.length - 3;
 					this.widgets[0].value = Math.min(this.widgets[0].value, this.widgets[0].options.max);
 				}
 			}
@@ -619,7 +619,7 @@ app.registerExtension({
 	},
 
 	nodeCreated(node, app) {
-		if(node.comfyClass == "MaskPainter") {
+		if (node.comfyClass == "MaskPainter") {
 			node.addWidget("button", "Edit mask", null, () => {
 				ComfyApp.copyToClipspace(node);
 				ComfyApp.clipspace_return_node = node;
@@ -627,7 +627,7 @@ app.registerExtension({
 			});
 		}
 
-		switch(node.comfyClass) {
+		switch (node.comfyClass) {
 			case "ToDetailerPipe":
 			case "ToDetailerPipeSDXL":
 			case "BasicPipeToDetailerPipe":
@@ -639,9 +639,9 @@ app.registerExtension({
 			case "DetailerForEachPipe":
 			case "DetailerForEachDebugPipe":
 				{
-					for(let i in node.widgets) {
+					for (let i in node.widgets) {
 						let widget = node.widgets[i];
-						if(widget.type === "customtext") {
+						if (widget.type === "customtext") {
 							widget.dynamicPrompts = false;
 							widget.inputEl.placeholder = "wildcard spec: if kept empty, this option will be ignored";
 							widget.serializeValue = () => {
@@ -653,36 +653,36 @@ app.registerExtension({
 				break;
 		}
 
-		if(node.comfyClass == "ImpactSEGSLabelFilter" || node.comfyClass == "SEGSLabelFilterDetailerHookProvider") {
+		if (node.comfyClass == "ImpactSEGSLabelFilter" || node.comfyClass == "SEGSLabelFilterDetailerHookProvider") {
 			node.widgets[0].callback = (value, canvas, node, pos, e) => {
-				if(node) {
-					if(node.widgets[1].value.trim() != "" && !node.widgets[1].value.trim().endsWith(","))
+				if (node) {
+					if (node.widgets[1].value.trim() != "" && !node.widgets[1].value.trim().endsWith(","))
 						node.widgets[1].value += ", "
 
 					node.widgets[1].value += value;
-					if(node.widgets_values)
+					if (node.widgets_values)
 						node.widgets_values[1] = node.widgets[1].value;
 				}
 			}
 
 			Object.defineProperty(node.widgets[0], "value", {
 				set: (value) => {
-						node._value = value;
-					},
+					node._value = value;
+				},
 				get: () => {
-						return node._value;
-					 }
+					return node._value;
+				}
 			});
 		}
 
-		if(node.comfyClass == "UltralyticsDetectorProvider") {
+		if (node.comfyClass == "UltralyticsDetectorProvider") {
 			let model_name_widget = node.widgets.find((w) => w.name === "model_name");
 			let orig_draw = node.onDrawForeground;
 			node.onDrawForeground = function (ctx) {
 				const r = orig_draw?.apply?.(this, arguments);
 
 				let is_seg = model_name_widget.value?.startsWith('segm/') || model_name_widget.value?.includes('-seg');
-				if(!is_seg) {
+				if (!is_seg) {
 					var slot_pos = new Float32Array(2);
 					var pos = node.getConnectionPos(false, 1, slot_pos);
 
@@ -701,11 +701,11 @@ app.registerExtension({
 			}
 		}
 
-		if(
-		node.comfyClass == "ImpactWildcardEncode" || node.comfyClass == "ImpactWildcardProcessor"
-		|| node.comfyClass == "ToDetailerPipe" || node.comfyClass == "ToDetailerPipeSDXL"
-		|| node.comfyClass == "EditDetailerPipe" || node.comfyClass == "EditDetailerPipeSDXL"
-		|| node.comfyClass == "BasicPipeToDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipeSDXL") {
+		if (
+			node.comfyClass == "ImpactWildcardEncode" || node.comfyClass == "ImpactWildcardProcessor"
+			|| node.comfyClass == "ToDetailerPipe" || node.comfyClass == "ToDetailerPipeSDXL"
+			|| node.comfyClass == "EditDetailerPipe" || node.comfyClass == "EditDetailerPipeSDXL"
+			|| node.comfyClass == "BasicPipeToDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipeSDXL") {
 			node._value = "Select the LoRA to add to the text";
 			node._wvalue = "Select the Wildcard to add to the text";
 
@@ -713,7 +713,7 @@ app.registerExtension({
 			var combo_id = 3;
 			var has_lora = true;
 
-			switch(node.comfyClass){
+			switch (node.comfyClass) {
 				case "ImpactWildcardEncode":
 					tbox_id = 0;
 					combo_id = 3;
@@ -736,16 +736,16 @@ app.registerExtension({
 					break;
 			}
 
-			node.widgets[combo_id+1].callback = (value, canvas, node, pos, e) => {
-					if(node) {
-						if(node.widgets[tbox_id].value != '')
-							node.widgets[tbox_id].value += ', '
+			node.widgets[combo_id + 1].callback = (value, canvas, node, pos, e) => {
+				if (node) {
+					if (node.widgets[tbox_id].value != '')
+						node.widgets[tbox_id].value += ', '
 
-						node.widgets[tbox_id].value += node._wildcard_value;
-					}
+					node.widgets[tbox_id].value += node._wildcard_value;
+				}
 			}
 
-			Object.defineProperty(node.widgets[combo_id+1], "value", {
+			Object.defineProperty(node.widgets[combo_id + 1], "value", {
 				set: (value) => {
 					if (value !== "Select the Wildcard to add to the text")
 						node._wildcard_value = value;
@@ -753,23 +753,23 @@ app.registerExtension({
 				get: () => { return "Select the Wildcard to add to the text"; }
 			});
 
-			Object.defineProperty(node.widgets[combo_id+1].options, "values", {
-				set: (x) => {},
+			Object.defineProperty(node.widgets[combo_id + 1].options, "values", {
+				set: (x) => { },
 				get: () => {
 					return wildcards_list;
 				}
 			});
 
-			if(has_lora) {
+			if (has_lora) {
 				node.widgets[combo_id].callback = (value, canvas, node, pos, e) => {
-					if(node) {
+					if (node) {
 						let lora_name = node._value;
-						if(lora_name.endsWith('.safetensors')) {
+						if (lora_name.endsWith('.safetensors')) {
 							lora_name = lora_name.slice(0, -12);
 						}
 
 						node.widgets[tbox_id].value += `<lora:${lora_name}>`;
-						if(node.widgets_values) {
+						if (node.widgets_values) {
 							node.widgets_values[tbox_id] = node.widgets[tbox_id].value;
 						}
 					}
@@ -777,22 +777,22 @@ app.registerExtension({
 
 				Object.defineProperty(node.widgets[combo_id], "value", {
 					set: (value) => {
-							if (value !== "Select the LoRA to add to the text")
-								node._value = value;
-						},
+						if (value !== "Select the LoRA to add to the text")
+							node._value = value;
+					},
 
 					get: () => { return "Select the LoRA to add to the text"; }
 				});
 			}
 
 			// Preventing validation errors from occurring in any situation.
-			if(has_lora) {
+			if (has_lora) {
 				node.widgets[combo_id].serializeValue = () => { return "Select the LoRA to add to the text"; }
 			}
-			node.widgets[combo_id+1].serializeValue = () => { return "Select the Wildcard to add to the text"; }
+			node.widgets[combo_id + 1].serializeValue = () => { return "Select the Wildcard to add to the text"; }
 		}
 
-		if(node.comfyClass == "ImpactWildcardProcessor" || node.comfyClass == "ImpactWildcardEncode") {
+		if (node.comfyClass == "ImpactWildcardProcessor" || node.comfyClass == "ImpactWildcardEncode") {
 			node.widgets[0].inputEl.placeholder = "Wildcard Prompt (User input)";
 			node.widgets[1].inputEl.placeholder = "Populated Prompt (Will be generated automatically)";
 			node.widgets[1].inputEl.disabled = true;
@@ -803,21 +803,21 @@ app.registerExtension({
 			// mode combo
 			Object.defineProperty(mode_widget, "value", {
 				set: (value) => {
-						if(value == true)
-							node._mode_value = "populate";
-						else if(value == false)
-							node._mode_value = "fixed";
-						else
-							node._mode_value = value; // combo value
+					if (value == true)
+						node._mode_value = "populate";
+					else if (value == false)
+						node._mode_value = "fixed";
+					else
+						node._mode_value = value; // combo value
 
-						populated_text_widget.inputEl.disabled = node._mode_value == 'populate';
-					},
+					populated_text_widget.inputEl.disabled = node._mode_value == 'populate';
+				},
 				get: () => {
-						if(node._mode_value != undefined)
-							return node._mode_value;
-						else
-							return 'populate';
-					 }
+					if (node._mode_value != undefined)
+						return node._mode_value;
+					else
+						return 'populate';
+				}
 			});
 		}
 
@@ -825,16 +825,16 @@ app.registerExtension({
 			node.widgets[0].value = '#placeholder';
 
 			Object.defineProperty(node, "images", {
-				set: function(value) {
+				set: function (value) {
 					node._images = value;
 				},
-				get: function() {
-					const id = node.id+"";
-					if(node.widgets[0].value != '#placeholder') {
+				get: function () {
+					const id = node.id + "";
+					if (node.widgets[0].value != '#placeholder') {
 						var need_invalidate = false;
 
-						if(input_dirty.hasOwnProperty(id) && input_dirty[id]) {
-							node.widgets[0].value = {...input_tracking[id][1]};
+						if (input_dirty.hasOwnProperty(id) && input_dirty[id]) {
+							node.widgets[0].value = { ...input_tracking[id][1] };
 							input_dirty[id] = false;
 							need_invalidate = true
 							this._images = app.nodeOutputs[id].images;
@@ -845,37 +845,37 @@ app.registerExtension({
 						let type = app.nodeOutputs[id]['aux'][1][0]['type'];
 
 						let item =
-							{
-								image_hash: app.nodeOutputs[id]['aux'][0],
-								forward_filename: app.nodeOutputs[id]['aux'][1][0]['filename'],
-								forward_subfolder: app.nodeOutputs[id]['aux'][1][0]['subfolder'],
-								forward_type: app.nodeOutputs[id]['aux'][1][0]['type']
-							};
+						{
+							image_hash: app.nodeOutputs[id]['aux'][0],
+							forward_filename: app.nodeOutputs[id]['aux'][1][0]['filename'],
+							forward_subfolder: app.nodeOutputs[id]['aux'][1][0]['subfolder'],
+							forward_type: app.nodeOutputs[id]['aux'][1][0]['type']
+						};
 
-						if(node._images) {
+						if (node._images) {
 							app.nodeOutputs[id].images = [{
-									...node._images[0],
-									...item
-								}];
+								...node._images[0],
+								...item
+							}];
 
 							node.widgets[0].value =
-								{
-									...node._images[0],
-									...item
-								};
+							{
+								...node._images[0],
+								...item
+							};
 						}
 						else {
 							app.nodeOutputs[id].images = [{
-									...item
-								}];
+								...item
+							}];
 
 							node.widgets[0].value =
-								{
-									...item
-								};
+							{
+								...item
+							};
 						}
 
-						if(need_invalidate) {
+						if (need_invalidate) {
 							Promise.all(
 								app.nodeOutputs[id].images.map((src) => {
 									return new Promise((r) => {
